@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/kafka https://raw.githubusercontent.com/spring-projects/spring-integration-extensions/master/spring-integration-kafka/src/main/resources/org/springframework/integration/config/xml/spring-integration-kafka-1.0.xsd
+http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+http://www.springframework.org/schema/integration/stream
+http://www.springframework.org/schema/integration/stream/spring-integration-stream.xsd">
+
+
+                
+	<int:publish-subscribe-channel id="inputToKafka" />
+	<int-kafka:outbound-channel-adapter
+	kafka-producer-context-ref="kafkaProducerContext" auto-startup="false"
+	channel="inputToKafka">
+	</int-kafka:outbound-channel-adapter>
+	<int-stream:stdout-channel-adapter
+		id="stdout" append-newline="true" />
+
+
+	<task:executor id="taskExecutor" pool-size="5"
+		keep-alive="120" queue-capacity="500" />
+
+
+
+	<bean id="customPartitioner" class="com.colobu.spring_kafka_demo.SimplePartitioner" />
+
+	<bean id="producerProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="topic.metadata.refresh.interval.ms">3600000</prop>
+				<prop key="message.send.max.retries">5</prop>
+				<prop key="serializer.class">kafka.serializer.StringEncoder</prop>
+				<prop key="request.required.acks">1</prop>
+				<prop key="partitioner.class">com.colobu.spring_kafka_demo.SimplePartitioner</prop>
+			</props>
+		</property>
+	</bean>
+
+	<int-kafka:producer-context id="kafkaProducerContext"
+		producer-properties="producerProperties">
+		<int-kafka:producer-configurations>
+			<int-kafka:producer-configuration
+				broker-list="localhost:9092"  topic="test" compression-codec="default"
+				partitioner="customPartitioner" />
+<!-- 			<int-kafka:producer-configuration
+				broker-list="localhost:9092" topic="test2" compression-codec="default" />
+			<int-kafka:producer-configuration
+				broker-list="localhost:9092" topic="regextopic.*"
+				compression-codec="default" /> -->
+		</int-kafka:producer-configurations>
+	</int-kafka:producer-context>
+</beans>
