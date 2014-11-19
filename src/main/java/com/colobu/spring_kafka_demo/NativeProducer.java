@@ -1,6 +1,5 @@
 package com.colobu.spring_kafka_demo;
 
-import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
@@ -18,7 +17,6 @@ public class NativeProducer {
         Properties props = new Properties();
         props.put("metadata.broker.list", "localhost:9092");
         props.put("serializer.class", "kafka.serializer.StringEncoder");
-        props.put("partitioner.class", "com.colobu.spring_kafka_demo.SimplePartitioner");
         props.put("request.required.acks", "1");
  
         ProducerConfig config = new ProducerConfig(props);
@@ -33,5 +31,4 @@ public class NativeProducer {
         producer.close();
 
 	}
-
 }

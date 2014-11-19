@@ -20,26 +20,11 @@ public class Producer {
 			channel.send(MessageBuilder.withPayload("Message-" + rand.nextInt()).setHeader("messageKey", String.valueOf(i)).setHeader("topic", "test").build());
 		}
 
-		// // sending 5,000 messages to kafka server for topic test2
-		// for (int i = 0; i < 50; i++) {
-		// channel.send(MessageBuilder.withPayload("hello Fom ob adapter test2 - "
-		// + i).setHeader("messageKey", String.valueOf(i)).setHeader("topic",
-		// "test2")
-		// .build());
-		// }
-		//
-		// // Send some messages to multiple topics matching regex.
-		// for (int i = 0; i < 10; i++) {
-		// channel.send(MessageBuilder.withPayload("hello Fom ob adapter regextopic1 - "
-		// + i).setHeader("messageKey", String.valueOf(i))
-		// .setHeader("topic", "regextopic1").build());
-		// }
-		// for (int i = 0; i < 10; i++) {
-		// channel.send(MessageBuilder.withPayload("hello Fom ob adapter regextopic2 - "
-		// + i).setHeader("messageKey", String.valueOf(i))
-		// .setHeader("topic", "regextopic2").build());
-		// }
-
+		try {
+			Thread.sleep(100000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		ctx.close();
 	}
 }
